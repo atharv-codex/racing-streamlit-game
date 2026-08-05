@@ -3,22 +3,20 @@ from streamlit_drawable_canvas import st_canvas
 import time
 import random
 
-# --- CONFIG ---
 st.set_page_config(page_title="Car Racing Game", layout="wide")
 
-# --- INITIALIZE SESSION STATE ---
 if "p1" not in st.session_state:
-    st.session_state.p1 = {"x": 50, "y": 300, "speed": 5, "color": "red", "laps": 0}
+    st.session_state.p1 = {"x": 50, "y": 300, "speed": 5, "color": "red"}
 if "p2" not in st.session_state:
-    st.session_state.p2 = {"x": 50, "y": 350, "speed": 5, "color": "blue", "laps": 0}
+    st.session_state.p2 = {"x": 50, "y": 350, "speed": 5, "color": "blue"}
 if "ai" not in st.session_state:
-    st.session_state.ai = {"x": 50, "y": 250, "speed": 4, "color": "green", "laps": 0}
+    st.session_state.ai = {"x": 50, "y": 250, "speed": 4, "color": "green"}
+
 if "mode" not in st.session_state:
     st.session_state.mode = "1 Player vs AI"
 if "running" not in st.session_state:
     st.session_state.running = False
 
-# --- UI ---
 st.title("🚗 Car Racing Game")
 st.write("Use **WASD** for Player 1 and **Arrow Keys** for Player 2.")
 
@@ -35,7 +33,6 @@ if start:
 if stop:
     st.session_state.running = False
 
-# --- CANVAS ---
 canvas = st_canvas(
     fill_color="rgba(0,0,0,0)",
     stroke_width=2,
@@ -47,7 +44,6 @@ canvas = st_canvas(
     key="canvas"
 )
 
-# --- MOVEMENT HANDLING ---
 def move_player(player, keys):
     if "w" in keys:
         player["y"] -= player["speed"]
@@ -69,11 +65,9 @@ def move_player2(player, keys):
         player["x"] += player["speed"]
 
 def move_ai(ai):
-    # Simple AI: moves forward and wiggles slightly
     ai["x"] += ai["speed"]
     ai["y"] += random.choice([-2, -1, 0, 1, 2])
 
-# --- DRAW CARS ---
 def draw_car(canvas, car):
     canvas.json_data["objects"].append({
         "type": "rect",
@@ -84,27 +78,23 @@ def draw_car(canvas, car):
         "fill": car["color"]
     })
 
-# --- GAME LOOP ---
 if st.session_state.running:
     keys = st.session_state.get("key_pressed", [])
 
-    # Player 1
     move_player(st.session_state.p1, keys)
 
-    # Player 2 or AI
     if st.session_state.mode == "2 Player Multiplayer":
         move_player2(st.session_state.p2, keys)
     else:
         move_ai(st.session_state.ai)
 
-    # Draw cars
     draw_car(canvas, st.session_state.p1)
+
     if st.session_state.mode == "2 Player Multiplayer":
         draw_car(canvas, st.session_state.p2)
     else:
         draw_car(canvas, st.session_state.ai)
 
-    # Win condition
     if st.session_state.p1["x"] > 750:
         st.success("🎉 Player 1 Wins!")
         st.session_state.running = False
@@ -118,7 +108,5 @@ if st.session_state.running:
             st.error("🤖 AI Wins!")
             st.session_state.running = False
 
-    # Rerun for animation
     time.sleep(0.05)
     st.experimental_rerun()
-
