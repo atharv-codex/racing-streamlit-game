@@ -1,5 +1,5 @@
 import streamlit as st
-from streamlit_canvas import st_canvas
+from streamlit_drawable_canvas import st_canvas
 import time
 import random
 
